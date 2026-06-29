@@ -1,0 +1,68 @@
+I recently completed a hands-on cybersecurity lab focused on building a basic SOC (Security Operations Center) monitoring environment using Sysmon and Splunk Enterprise.
+
+🎯 Objective
+To generate endpoint telemetry using Sysmon on Windows 11 and successfully ingest and analyze it in Splunk for security monitoring and attack visibility.
+
+🧪 Tools Used
+
+Windows 11 (Host Machine)
+Sysmon (System Monitor by Microsoft Sysinternals)
+Splunk Enterprise
+Splunk Add-on for Microsoft Windows
+Kali Linux (planned for attack simulation)
+
+⚙️ Steps Performed
+
+1. Installed and configured Sysmon on Windows
+
+Sysmon was installed and configured to generate detailed system activity logs.
+
+Command used:
+
+.\Sysmon64.exe -accepteula -i sysmonconfig-export.xml
+2. Verified Sysmon logging in Windows
+
+Confirmed Sysmon was generating events:
+
+Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -MaxEvents 5
+3. Configured Splunk to ingest Windows Event Logs
+
+Enabled Windows Event Log collection in Splunk and initially monitored:
+
+Security logs
+System logs
+Application logs
+
+4. Installed Splunk Add-on for Microsoft Windows
+
+Installed the Splunk TA to enable proper parsing and field extraction of Windows event logs including Sysmon.
+
+5. Verified Sysmon ingestion in Splunk
+
+Confirmed Sysmon logs were being ingested successfully:
+
+index=main source="WinEventLog:Microsoft-Windows-Sysmon/Operational"
+6. Validated Event types (Security visibility achieved)
+
+Process creation events:
+
+index=main source="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=1
+Network connection events:
+
+index=main source="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventCode=3 | head 10
+🔍 Outcome
+
+Successfully built endpoint visibility using Sysmon
+Ingested and analyzed logs in Splunk Enterprise
+Confirmed both process creation and network connection telemetry
+Prepared environment for attack simulation and SOC detection use cases
+
+Although, I faced a major challenge because splunk wasn’t reading logs from Sysmon, it troubled me for sometime but in the end I was able to fix it by modyfing the inputs.conf file in the splunk directory. I really enjoyed the challenges I faced in setting up everything.
+
+Here is the modification in inputs.conf
+
+[WinEventLog://Microsoft-Windows-Sysmon/Operational]
+disabled = 0
+index = main
+renderXml = true
+Next I will now simulate:🔥 Nmap Attack from Kali → Detection in Splunk
